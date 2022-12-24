@@ -22,8 +22,8 @@
             <div id="chat-window" class="mb-2">
             </div>
             <div class="input-group row g-1">
-              <input id="chat-input" type="text" class="form-control" placeholder="Enter your message" rows="1"
-                autofocus>
+              <textarea id="chat-input" class="form-control" placeholder="Enter your message" rows="2"
+                autofocus></textarea>
               <div class="input-group-append">
                 <button id="send-button" class="btn btn-primary" type="button">Send</button>
               </div>
@@ -79,9 +79,16 @@
         })
     }
 
-
+    let shiftActive = false;
     // Add an event listener to the input field that listens for the keydown event
-    inputField.addEventListener('keydown', event => (event.key === 'Enter') && sendMessage())
+    inputField.addEventListener('keydown', event => {
+      (event.key === 'Enter' && !shiftActive) && (event.preventDefault() || sendMessage());
+      (event.key === 'Shift') && (shiftActive = true);
+    });
+
+    inputField.addEventListener('keyup', event => {
+      (event.key === 'Shift') && (shiftActive = false);
+    });
 
     // Add an event listener to the send button
     sendButton.addEventListener('click', sendMessage)
