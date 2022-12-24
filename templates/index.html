@@ -24,7 +24,7 @@
           </div>
         </div>
         <div class="container sticky-bottom pb-4">
-          <div class="input-group row g-1 mt-1">
+          <div class="input-group row g-1 p-2">
             <textarea id="chat-input" class="form-control" placeholder="Tell StudyBot what you need help with." rows="2"
               autofocus></textarea>
             <div class="d-grid gap-2">
@@ -42,7 +42,7 @@
     const inputField = document.getElementById('chat-input');
     const sendButton = document.getElementById('send-button');
 
-    const messageClassList = 'fs-3 font-weight-bold mb-3 card';
+    const messageClassList = 'fs-5 font-weight-bold mb-3 card';
 
     // Get a reference to the chat window
     const chatWindow = document.getElementById('chat-window');
@@ -61,6 +61,9 @@
 
       // Add the message to the chat window
       chatWindow.appendChild(messageElement);
+
+      // Scroll the window so the new message is in view
+      window.scrollTo(0, document.body.scrollHeight);
 
       let chatHistory = '';
       for (c of chatWindow.children) {
@@ -82,9 +85,9 @@
           responseElement.classList += ` bg-dark text-light ${messageClassList}`;
           responseElement.innerText = `${result}`;
           chatWindow.appendChild(responseElement);
+          window.scrollTo(0, document.body.scrollHeight);
         })
 
-      window.scrollTo(0, document.body.scrollHeight);
     }
 
     let shiftActive = false;

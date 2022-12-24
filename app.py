@@ -1,4 +1,6 @@
 import os
+import time
+
 
 import openai
 from flask import Flask, render_template, request
@@ -24,7 +26,8 @@ def chat():
     #     stop="Student:"
     # )
     # return response['choices'][0].text
-    return 'hello!'
+    time.sleep(2)
+    return 'Sure thing! Neural networks are composed of artificial neurons, which are connected to each other in layers. Each neuron is responsible for taking in a certain input, processing it, and then outputting a result. The neurons in the first layer take in the inputs, and the neurons in the last layer output the results. In between, the neurons in the hidden layers process the data and pass it on to the next layer. The connections between the neurons are weighted, meaning that some values are given more importance than others. This is how the neural network is able to form complex patterns and make predictions. Does this answer your question?'
 
 
 def generate_prompt(prompt):
