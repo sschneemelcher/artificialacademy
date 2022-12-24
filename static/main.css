@@ -73,12 +73,6 @@ input[type="submit"] {
   cursor: pointer;
 }
 
-.chatMessage {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 15px;
-}
-
 .request {
   text-align: right;
   color: #1e1e2e;

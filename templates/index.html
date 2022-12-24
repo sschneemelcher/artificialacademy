@@ -25,10 +25,12 @@
         </div>
         <div class="container sticky-bottom pb-4">
           <div class="input-group row g-1 mt-1">
-            <textarea id="chat-input" class="form-control" placeholder="Enter your message" rows="2"
+            <textarea id="chat-input" class="form-control" placeholder="Tell StudyBot what you need help with." rows="2"
               autofocus></textarea>
-            <div class="input-group-append">
-              <button id="send-button" class="btn btn-primary" type="button">Send</button>
+            <div class="d-grid gap-2">
+              <button id="send-button" type="button" class="btn btn-primary" disabled>
+                Send
+              </button>
             </div>
           </div>
         </div>
@@ -39,6 +41,8 @@
     // Get references to the input field and send button
     const inputField = document.getElementById('chat-input');
     const sendButton = document.getElementById('send-button');
+
+    const messageClassList = 'fs-3 font-weight-bold mb-3 card';
 
     // Get a reference to the chat window
     const chatWindow = document.getElementById('chat-window');
@@ -52,7 +56,7 @@
 
       // Create a new element to display the message
       const messageElement = document.createElement('div');
-      messageElement.classList += ' chatMessage request';
+      messageElement.classList += ` text-end bg-secondary text-light ${messageClassList}`;
       messageElement.innerText = `${message}`;
 
       // Add the message to the chat window
@@ -75,21 +79,27 @@
         .then(result => {
           // Display the server's response in the chat window
           const responseElement = document.createElement('div');
-          responseElement.classList += ' chatMessage response';
+          responseElement.classList += ` bg-dark text-light ${messageClassList}`;
           responseElement.innerText = `${result}`;
           chatWindow.appendChild(responseElement);
         })
+
+      window.scrollTo(0, document.body.scrollHeight);
     }
 
     let shiftActive = false;
     // Add an event listener to the input field that listens for the keydown event
     inputField.addEventListener('keydown', event => {
-      (event.key === 'Enter' && !shiftActive) && (event.preventDefault() || sendMessage());
+      (event.key === 'Enter' && !shiftActive) && inputField.value.length && (event.preventDefault() || sendMessage());
+      (event.key === 'Enter' && !shiftActive) && !inputField.value.length && event.preventDefault();
       (event.key === 'Shift') && (shiftActive = true);
     });
 
     inputField.addEventListener('keyup', event => {
       (event.key === 'Shift') && (shiftActive = false);
+      if (inputField.value.length)
+        sendButton.removeAttribute('disabled')
+      else sendButton.setAttribute('disabled', '');
     });
 
     // Add an event listener to the send button
