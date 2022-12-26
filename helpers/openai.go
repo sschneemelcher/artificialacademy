@@ -36,5 +36,6 @@ func GetCompletion(prompt string) string {
 }
 
 func GetCompletionDummy(prompt string) string {
+	log.Println(fmt.Sprintf(prePrompt, prompt))
 	return "Hello World!"
 }

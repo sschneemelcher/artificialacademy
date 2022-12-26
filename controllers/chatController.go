@@ -35,24 +35,44 @@ func ChatPost(c *fiber.Ctx) error {
 		return err
 	}
 
-	// log.Println(m.Content)
-
-	// Save message content in DB
-	message := models.Message{Content: m.Content, IsResponse: false}
-	result := initializers.DB.Create(&message)
+	var history []models.Message
+	result := initializers.DB.Find(&history)
 
 	if result.Error != nil {
 		return result.Error
 	}
 
+	// log.Println(m.Content)
+
+	// Save message content in DB
+	message := models.Message{Content: m.Content, IsResponse: false}
+	result = initializers.DB.Create(&message)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	prompt := ""
+	for idx, val := range history {
+		if idx > 0 {
+			if val.IsResponse {
+				prompt += "StudyBot: "
+			} else {
+				prompt += "Student: "
+			}
+		}
+		prompt += val.Content + "\n"
+	}
+	prompt += "Student: " + m.Content
+
 	// Generate completion
-	completion := helpers.GetCompletionDummy(m.Content)
+	completion := helpers.GetCompletion(prompt)
 
 	// Save completion as message in DB
 	completionMessage := models.Message{Content: completion, IsResponse: true}
-	completionResult := initializers.DB.Create(&completionMessage)
+	result = initializers.DB.Create(&completionMessage)
 
-	if completionResult.Error != nil {
+	if result.Error != nil {
 		return result.Error
 	}
 
