@@ -7,6 +7,6 @@ import (
 )
 
 func Routes(app *fiber.App) {
-	app.Get("/", controllers.ChatIndex)
+	app.Get("/chat", controllers.ChatIndex)
 	app.Post("/chat", controllers.ChatPost)
 }

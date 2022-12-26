@@ -31,7 +31,7 @@ const sendMessage = () => {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: `{"text":"${message}"}`
+    body: `{"content":"${message}"}`
   })
     .then(response => response.text())
     .then(result => {
@@ -62,3 +62,4 @@ inputField.addEventListener('keyup', event => {
 
 // Add an event listener to the send button
 sendButton.addEventListener('click', sendMessage)
+onload = () => window.scrollTo(0, document.body.scrollHeight);

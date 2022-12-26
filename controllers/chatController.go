@@ -4,16 +4,28 @@ import (
 	"fmt"
 	"log"
 	"sschneemelcher/artificialacademy/helpers"
+	"sschneemelcher/artificialacademy/initializers"
+	"sschneemelcher/artificialacademy/models"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type Message struct {
-	Text string `json:"text" xml:"text" form:"text"`
+	Content string `json:"content" xml:"content" form:"content"`
 }
 
 func ChatIndex(c *fiber.Ctx) error {
-	return c.Render("chat/index", fiber.Map{})
+	// get history from DB
+	var history []models.Message
+	result := initializers.DB.Find(&history)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return c.Render("chat/index", fiber.Map{
+		"history": history,
+	})
 }
 
 func ChatPost(c *fiber.Ctx) error {
@@ -23,10 +35,26 @@ func ChatPost(c *fiber.Ctx) error {
 		return err
 	}
 
-	log.Println(m.Text)
+	log.Println(m.Content)
+
+	// Save message content in DB
+	message := models.Message{Content: m.Content, IsResponse: false}
+	result := initializers.DB.Create(&message)
+
+	if result.Error != nil {
+		return result.Error
+	}
 
 	// Generate completion
-	res := helpers.GetCompletion(m.Text)
+	completion := helpers.GetCompletionDummy(m.Content)
 
-	return c.SendString(fmt.Sprintf("%s", res))
+	// Save completion as message in DB
+	completionMessage := models.Message{Content: completion, IsResponse: true}
+	completionResult := initializers.DB.Create(&completionMessage)
+
+	if completionResult.Error != nil {
+		return result.Error
+	}
+
+	return c.SendString(fmt.Sprintf("%s", completion))
 }

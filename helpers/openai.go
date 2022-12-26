@@ -34,3 +34,7 @@ func GetCompletion(prompt string) string {
 
 	return resp.Choices[0].Text
 }
+
+func GetCompletionDummy(prompt string) string {
+	return "Hello World!"
+}
