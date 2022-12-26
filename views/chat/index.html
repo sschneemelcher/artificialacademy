@@ -8,7 +8,7 @@
 <div class="container pb-5">
   <div class="row">
     <div class="col-md-6 offset-md-3">
-      <div class="card mt-5">
+      <div class="card mt-5" style="background-color: #b4befe">
         <div class="card-body">
           <div id="chat-window">
             {{ range .history }}
@@ -27,6 +27,9 @@
           <div class="d-grid gap-2">
             <button id="send-button" type="button" class="btn btn-primary" disabled>
               Send
+            </button>
+            <button id="clear-button" type="button" class="btn text-light" style="background-color: #d20f39">
+              Clear history
             </button>
           </div>
         </div>

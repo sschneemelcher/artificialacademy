@@ -1,11 +1,11 @@
-// Get references to the input field and send button
+// Get references
 const inputField = document.getElementById('chat-input');
 const sendButton = document.getElementById('send-button');
+const clearButton = document.getElementById('clear-button');
+const chatWindow = document.getElementById('chat-window');
 
 const messageClassList = 'fs-5 font-weight-bold mb-3 card';
 
-// Get a reference to the chat window
-const chatWindow = document.getElementById('chat-window');
 
 const sendMessage = () => {
   // Get the message from the input field
@@ -41,8 +41,18 @@ const sendMessage = () => {
       responseElement.innerText = `${result}`;
       chatWindow.appendChild(responseElement);
       window.scrollTo(0, document.body.scrollHeight);
+      sendButton.setAttribute('disabled', '');
     })
+}
 
+const clearHistory = () => {
+  fetch('/chat', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  })
+    .then(response => (response.status === 200) && (chatWindow.innerHTML = ''))
 }
 
 let shiftActive = false;
@@ -62,4 +72,5 @@ inputField.addEventListener('keyup', event => {
 
 // Add an event listener to the send button
 sendButton.addEventListener('click', sendMessage)
+clearButton.addEventListener('click', clearHistory)
 onload = () => window.scrollTo(0, document.body.scrollHeight);

@@ -9,4 +9,5 @@ import (
 func Routes(app *fiber.App) {
 	app.Get("/chat", controllers.ChatIndex)
 	app.Post("/chat", controllers.ChatPost)
+	app.Delete("/chat", controllers.ChatClear)
 }

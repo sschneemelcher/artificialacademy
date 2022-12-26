@@ -72,15 +72,3 @@ input[type="submit"] {
   text-align: center;
   cursor: pointer;
 }
-
-.request {
-  text-align: right;
-  color: #1e1e2e;
-  background-color: #dce0e8;
-}
-
-.response {
-  text-align: left;
-  color: #11111b;
-  background-color: #e6e9ef;
-}
