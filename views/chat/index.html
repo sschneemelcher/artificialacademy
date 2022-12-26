@@ -1,0 +1,34 @@
+{{template "partials/top" .}}
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-top pt-4" style="background-color: #11111b">
+  <div class="container-fluid" style="width: 100vw; background-color: #11111b">
+    <a class="navbar-brand" href="#">artificial.academy</a>
+  </div>
+</nav>
+<div class="container pb-5">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <div class="card mt-5">
+        <div class="card-body">
+          <div id="chat-window">
+          </div>
+        </div>
+      </div>
+      <div class="container sticky-bottom pb-4">
+        <div class="input-group row g-1 p-2">
+          <textarea id="chat-input" class="form-control" placeholder="Tell StudyBot what you need help with." rows="2"
+            autofocus></textarea>
+          <div class="d-grid gap-2">
+            <button id="send-button" type="button" class="btn btn-primary" disabled>
+              Send
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/assets/chat.js">
+</script>
+
+{{template "partials/bottom" .}}
