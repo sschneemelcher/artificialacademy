@@ -88,12 +88,13 @@ func Login(c *fiber.Ctx) error {
 			"error": "Failed to create token",
 		})
 	}
+
+	// Set cookie
 	cookie := new(fiber.Cookie)
 	cookie.Name = "token"
 	cookie.Value = tokenString
 	cookie.Expires = time.Now().Add(time.Hour * 24)
-
-	// Set cookie
+	cookie.HTTPOnly = true
 	c.Cookie(cookie)
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{})
