@@ -1,11 +1,9 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 	"os"
 
-	// "log"
 	"sschneemelcher/artificialacademy/helpers"
 	"sschneemelcher/artificialacademy/initializers"
 	"sschneemelcher/artificialacademy/models"
@@ -53,13 +51,6 @@ func ChatIndex(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "No history found"})
 	}
-
-	log.Println(history)
-
-	// result = initializers.DB.Find(&historyResult, "chat_id", lastChat.ChatID)
-	// if result.Error != nil {
-	// 	return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to lookup history"})
-	// }
 
 	return c.Render("chat/index", fiber.Map{
 		"companyName": os.Getenv("COMPANY_NAME"),
@@ -139,8 +130,6 @@ func ChatPost(c *fiber.Ctx) error {
 }
 
 func ChatClear(c *fiber.Ctx) error {
-	// delete all messages
-
 	// Get user from jwt
 	user := c.Locals("user").(models.User)
 
@@ -153,15 +142,13 @@ func ChatClear(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to lookup latest chat"})
 	}
-	log.Println(userChat.ChatID)
 
+	// This only soft deletes the messages
 	result = initializers.DB.Where("chat_id = ?", userChat.ChatID).Delete(&models.Message{})
 
 	if result.Error != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to delete messages"})
 	}
-
-	log.Println(result.RowsAffected)
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{})
 }
