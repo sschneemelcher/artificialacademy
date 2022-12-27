@@ -22,4 +22,6 @@ func ConnectToDatabase() {
 func SyncDB() {
 	DB.AutoMigrate(&models.Message{})
 	DB.AutoMigrate(&models.User{})
+	DB.AutoMigrate(&models.Chat{})
+	DB.AutoMigrate(&models.UserChat{})
 }

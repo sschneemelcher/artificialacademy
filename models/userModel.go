@@ -7,4 +7,7 @@ type User struct {
 	Name     string
 	Password string
 	Verified bool
+	IsStaff  bool
+	Messages []Message
+	Chats    []UserChat
 }

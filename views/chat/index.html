@@ -6,9 +6,10 @@
       <div class="card mt-5" style="background-color: #b4befe">
         <div class="card-body">
           <div id="chat-window">
+            {{ $userId := .userId}}
             {{ range .history }}
             <div
-              class="fs-5 font-weight-bold mb-3 card {{if .IsResponse}}bg-dark text-light{{else}}text-end bg-secondary text-light{{end}}">
+              class="fs-5 font-weight-bold mb-3 card {{if ne .UserID $userId }}bg-dark text-light{{else}}text-end bg-secondary text-light{{end}}">
               {{.Content}}
             </div>
             {{end}}

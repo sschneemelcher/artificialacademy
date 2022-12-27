@@ -12,7 +12,7 @@ const login = (e) => {
     },
     body: `{"name":"${usernameField.value}","pass":"${passwordField.value}"}`
   })
-    .then(response => response.status === 200 && (window.location = "/chat"))
+    .then(response => response.status === 200 && (window.location = "/"))
 }
 
 loginButton.addEventListener('click', login)
