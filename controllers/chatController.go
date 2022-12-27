@@ -24,7 +24,7 @@ func ChatIndex(c *fiber.Ctx) error {
 	result := initializers.DB.Last(&lastChat, "user_id = ?", user.ID)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			chat := models.Chat{}
+			chat := models.Chat{Title: "New Chat"}
 			initializers.DB.Create(&chat)
 			userChat := models.UserChat{UserID: user.ID, ChatID: chat.ID}
 			initializers.DB.Create(&userChat)
@@ -46,10 +46,28 @@ func ChatIndex(c *fiber.Ctx) error {
 	result = initializers.DB.Model(&models.User{}).
 		Select("users.name, messages.user_id, messages.content, messages.chat_id").
 		Joins("right join messages on messages.user_id = users.id").
-		Where("messages.chat_id = ? AND messages.deleted_at IS NULL", lastChat.ChatID).Order("messages.created_at ASC").Find(&history)
+		Where("messages.chat_id = ? AND messages.deleted_at IS NULL", lastChat.ChatID).
+		Order("messages.created_at ASC").
+		Find(&history)
 
 	if result.Error != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "No history found"})
+	}
+
+	type ChatList struct {
+		Title  string
+		ChatID uint
+	}
+	chats := []ChatList{}
+	result = initializers.DB.Model(&models.Chat{}).
+		Select("chats.title, user_chats.chat_id").
+		Joins("right join user_chats on user_chats.chat_id = chats.id").
+		Where("user_chats.user_id = ? AND user_chats.deleted_at IS NULL AND chats.deleted_at IS NULL", user.ID).
+		Order("chats.created_at ASC").
+		Find(&chats)
+
+	if result.Error != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "No chats found"})
 	}
 
 	return c.Render("chat/index", fiber.Map{
@@ -57,6 +75,7 @@ func ChatIndex(c *fiber.Ctx) error {
 		"history":     history,
 		"userId":      user.ID,
 		"userName":    user.Name,
+		"chats":       chats,
 	})
 }
 

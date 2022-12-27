@@ -24,3 +24,22 @@
   </nav>
   <script src="/assets/logout.js">
   </script>
+
+  <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="background-color: inherit">
+    <div class="position-sticky pt-3 sidebar-sticky">
+      <ul class="nav flex-column">
+        <h6
+          class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-light text-uppercase">
+          <span>Chats</span>
+        </h6>
+        {{range .chats}}
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/{{.ChatID}}">
+            <span data-feather="home" class="align-text-bottom"></span>
+            {{.Title}}
+          </a>
+        </li>
+        {{end}}
+      </ul>
+    </div>
+  </nav>
