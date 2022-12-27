@@ -17,4 +17,5 @@ func Routes(app *fiber.App) {
 	app.Get("/login", controllers.UserIndex)
 	app.Post("/signup", controllers.Signup)
 	app.Post("/login", controllers.Login)
+	app.Delete("/logout", controllers.Logout)
 }

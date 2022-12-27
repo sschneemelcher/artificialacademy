@@ -47,6 +47,11 @@ func Signup(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(fiber.Map{})
 }
 
+func Logout(c *fiber.Ctx) error {
+	c.ClearCookie("token")
+	return c.Status(http.StatusOK).JSON(fiber.Map{})
+}
+
 func Login(c *fiber.Ctx) error {
 	// Get name/pass off request body
 	body := new(Body)
