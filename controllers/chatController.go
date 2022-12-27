@@ -109,7 +109,7 @@ func ChatPost(c *fiber.Ctx) error {
 	completion := helpers.GetCompletionDummy(prompt)
 
 	// Save completion as message in DB
-	completionMessage := models.Message{Content: completion, UserID: 1, ChatID: userChat.ChatID}
+	completionMessage := models.Message{Content: completion, UserID: 0, ChatID: userChat.ChatID}
 	result = initializers.DB.Create(&completionMessage)
 
 	if result.Error != nil {
