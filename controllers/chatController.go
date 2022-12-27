@@ -47,6 +47,7 @@ func ChatIndex(c *fiber.Ctx) error {
 		"companyName": os.Getenv("COMPANY_NAME"),
 		"history":     history,
 		"userId":      user.ID,
+		"userName":    user.Name,
 	})
 }
 
