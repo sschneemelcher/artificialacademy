@@ -1,4 +1,3 @@
-// Get references
 const inputField = document.getElementById('chat-input');
 const sendButton = document.getElementById('send-button');
 const clearButton = document.getElementById('clear-button');
@@ -6,6 +5,30 @@ const chatWindow = document.getElementById('chat-window');
 
 const messageClassList = 'fs-5 font-weight-bold mb-3 card';
 
+const appendMessage = (message, user) => {
+
+  // Create a new element to display the message
+  const messageElement = document.createElement('div');
+  const messageElementUsername = document.createElement('span');
+  const messageElementMessage = document.createElement('span');
+  if (user != "me") {
+    messageElement.classList += ` text-start bg-dark text-light ${messageClassList}`;
+  } else {
+    messageElement.classList += ` text-end bg-secondary text-light ${messageClassList}`;
+  }
+  messageElementMessage.innerText = `${message}`;
+  messageElementUsername.innerHTML = `${user}:</br>`;
+  messageElementUsername.classList += ' fs-6 text-decoration-underline';
+  messageElement.appendChild(messageElementUsername);
+  messageElement.appendChild(messageElementMessage);
+
+  // Add the message to the chat window
+  chatWindow.appendChild(messageElement);
+
+  // Scroll the window so the new message is in view
+  window.scrollTo(0, document.body.scrollHeight);
+
+}
 
 const sendMessage = () => {
   // Get the message from the input field
@@ -13,17 +36,8 @@ const sendMessage = () => {
 
   // Clear the input field
   inputField.value = '';
+  appendMessage(message, 'me');
 
-  // Create a new element to display the message
-  const messageElement = document.createElement('div');
-  messageElement.classList += ` text-end bg-secondary text-light ${messageClassList}`;
-  messageElement.innerText = `${message}`;
-
-  // Add the message to the chat window
-  chatWindow.appendChild(messageElement);
-
-  // Scroll the window so the new message is in view
-  window.scrollTo(0, document.body.scrollHeight);
 
   // Send a POST request to the server with the updated chat history
   fetch('/chat', {
@@ -33,14 +47,9 @@ const sendMessage = () => {
     },
     body: `{"content":"${message}"}`
   })
-    .then(response => response.text())
+    .then(response => response.json())
     .then(result => {
-      // Display the server's response in the chat window
-      const responseElement = document.createElement('div');
-      responseElement.classList += ` bg-dark text-light ${messageClassList}`;
-      responseElement.innerText = `${result}`;
-      chatWindow.appendChild(responseElement);
-      window.scrollTo(0, document.body.scrollHeight);
+      appendMessage(result.message, result.user);
       sendButton.setAttribute('disabled', '');
     })
 }

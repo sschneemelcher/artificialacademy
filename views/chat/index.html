@@ -6,11 +6,14 @@
       <div class="card mt-5" style="background-color: #b4befe">
         <div class="card-body">
           <div id="chat-window">
-            {{ $userId := .userId}}
-            {{ range .history }}
+            {{$userId := .userId}}
+            {{range .history}}
             <div
               class="fs-5 font-weight-bold mb-3 card {{if ne .UserID $userId }}bg-dark text-light{{else}}text-end bg-secondary text-light{{end}}">
-              {{.Content}}
+              <span class="fs-6 text-decoration-underline">{{if ne .UserID $userId}} {{if
+                .Name}}{{.Name}}{{else}}StudyBot{{end}}{{else}}me:
+                {{end}}</br></span>
+              <span>{{.Content}}</span>
             </div>
             {{end}}
           </div>

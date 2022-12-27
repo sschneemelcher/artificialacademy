@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -37,11 +37,29 @@ func ChatIndex(c *fiber.Ctx) error {
 	}
 
 	// get history from DB
-	var history []models.Message
-	result = initializers.DB.Find(&history, "chat_id", lastChat.ChatID)
-	if result.Error != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to lookup history"})
+	type History struct {
+		Name    string
+		UserID  uint
+		Content string
+		ChatID  uint
 	}
+
+	history := []History{}
+	result = initializers.DB.Model(&models.User{}).
+		Select("users.name, messages.user_id, messages.content, messages.chat_id").
+		Joins("right join messages on messages.user_id = users.id").
+		Where("messages.chat_id = ? AND messages.deleted_at IS NULL", lastChat.ChatID).Order("messages.created_at ASC").Find(&history)
+
+	if result.Error != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "No history found"})
+	}
+
+	log.Println(history)
+
+	// result = initializers.DB.Find(&historyResult, "chat_id", lastChat.ChatID)
+	// if result.Error != nil {
+	// 	return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to lookup history"})
+	// }
 
 	return c.Render("chat/index", fiber.Map{
 		"companyName": os.Getenv("COMPANY_NAME"),
@@ -117,7 +135,7 @@ func ChatPost(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to save response"})
 	}
 
-	return c.SendString(fmt.Sprintf("%s", completion))
+	return c.JSON(fiber.Map{"message": completion, "user": "StudyBot"})
 }
 
 func ChatClear(c *fiber.Ctx) error {
@@ -135,12 +153,15 @@ func ChatClear(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to lookup latest chat"})
 	}
+	log.Println(userChat.ChatID)
 
-	result = initializers.DB.Delete(&models.Message{}, "chat_id = ?", userChat.ChatID)
+	result = initializers.DB.Where("chat_id = ?", userChat.ChatID).Delete(&models.Message{})
 
 	if result.Error != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to delete messages"})
 	}
+
+	log.Println(result.RowsAffected)
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{})
 }

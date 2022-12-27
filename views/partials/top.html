@@ -16,8 +16,8 @@
       <a class="navbar-brand" href="#">{{ .companyName }}</a>
     </div>
     {{ if .userName }}
-    <span class="col">{{ .userName }}</span>
-    <button type="button" id="logout-button" class="btn text-light col">
+    <span class="col text-light">user:{{ .userName }}</span>
+    <button type="button" id="logout-button" class="btn text-light col text-decoration-underline">
       logout
     </button>
     {{ end }}
