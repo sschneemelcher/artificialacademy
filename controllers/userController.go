@@ -18,6 +18,12 @@ type Body struct {
 	Password string `json:"pass" xml:"pass" form:"pass"`
 }
 
+func UserIndex(c *fiber.Ctx) error {
+	return c.Render("user/login", fiber.Map{
+		"companyName": os.Getenv("COMPANY_NAME"),
+	})
+}
+
 func Signup(c *fiber.Ctx) error {
 	// Get name/pass off request body
 	body := new(Body)
@@ -82,8 +88,13 @@ func Login(c *fiber.Ctx) error {
 			"error": "Failed to create token",
 		})
 	}
+	cookie := new(fiber.Cookie)
+	cookie.Name = "token"
+	cookie.Value = tokenString
+	cookie.Expires = time.Now().Add(time.Hour * 24)
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"token": tokenString,
-	})
+	// Set cookie
+	c.Cookie(cookie)
+
+	return c.Status(http.StatusOK).JSON(fiber.Map{})
 }

@@ -13,6 +13,7 @@ func Routes(app *fiber.App) {
 	app.Delete("/chat", controllers.ChatClear)
 
 	// User routes
+	app.Get("/", controllers.UserIndex)
 	app.Post("/signup", controllers.Signup)
 	app.Post("/login", controllers.Login)
 }

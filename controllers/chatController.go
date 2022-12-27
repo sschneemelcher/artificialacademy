@@ -3,6 +3,8 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"os"
+
 	// "log"
 	"sschneemelcher/artificialacademy/helpers"
 	"sschneemelcher/artificialacademy/initializers"
@@ -21,7 +23,8 @@ func ChatIndex(c *fiber.Ctx) error {
 	}
 
 	return c.Render("chat/index", fiber.Map{
-		"history": history,
+		"companyName": os.Getenv("COMPANY_NAME"),
+		"history":     history,
 	})
 }
 
