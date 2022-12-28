@@ -123,4 +123,5 @@ input[type="submit"] {
 
 .sidebar-heading {
   font-size: .75rem;
+  text-decoration: none;
 }

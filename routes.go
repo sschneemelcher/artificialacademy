@@ -10,7 +10,9 @@ import (
 func Routes(app *fiber.App) {
 	// Chat routes
 	app.Get("/", middleware.RequireAuth, controllers.ChatIndex)
+	app.Get("/chat/:chatid", middleware.RequireAuth, controllers.ChatByID)
 	app.Post("/chat", middleware.RequireAuth, controllers.ChatPost)
+	app.Post("/new", middleware.RequireAuth, controllers.ChatNew)
 	app.Delete("/chat", middleware.RequireAuth, controllers.ChatClear)
 
 	// User routes

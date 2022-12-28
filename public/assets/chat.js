@@ -38,14 +38,13 @@ const sendMessage = () => {
   inputField.value = '';
   appendMessage(message, 'me');
 
-
   // Send a POST request to the server with the updated chat history
   fetch('/chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: `{"content":"${message}"}`
+    body: `{"content":"${message}","chat_id":${document.getElementById('chat-window').attributes.chatid.value}}`
   })
     .then(response => response.json())
     .then(result => {

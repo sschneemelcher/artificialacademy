@@ -5,12 +5,12 @@
     <div class="col-md-6 offset-md-3">
       <div class="card mt-5" style="background-color: #b4befe">
         <div class="card-body">
-          <div id="chat-window">
-            {{$userId := .userId}}
+          <div id="chat-window" chatID="{{.chatID}}">
+            {{$userID := .userID}}
             {{range .history}}
             <div
-              class="fs-5 font-weight-bold mb-3 card {{if ne .UserID $userId }}bg-dark text-light{{else}}text-end bg-secondary text-light{{end}}">
-              <span class="fs-6 text-decoration-underline">{{if ne .UserID $userId}} {{if
+              class="fs-5 font-weight-bold mb-3 card {{if ne .UserID $userID }}bg-dark text-light{{else}}text-end bg-secondary text-light{{end}}">
+              <span class="fs-6 text-decoration-underline">{{if ne .UserID $userID}} {{if
                 .Name}}{{.Name}}{{else}}StudyBot{{end}}{{else}}me:
                 {{end}}</br></span>
               <span>{{.Content}}</span>

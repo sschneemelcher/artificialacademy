@@ -20,21 +20,21 @@
     <button type="button" id="logout-button" class="btn text-light col text-decoration-underline">
       logout
     </button>
+    <script src="/assets/logout.js">
+    </script>
     {{ end }}
   </nav>
-  <script src="/assets/logout.js">
-  </script>
 
-  <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="background-color: inherit">
+  <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block mt-5 sidebar collapse" style="background-color: inherit">
     <div class="position-sticky pt-3 sidebar-sticky">
       <ul class="nav flex-column">
-        <h6
-          class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-light text-uppercase">
-          <span>Chats</span>
-        </h6>
+        <button type="button" id="newchat-button" class="btn text-light text-start text-uppercase">
+          Chats (+)
+        </button>
+        {{$chatID := .chatID}}
         {{range .chats}}
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/{{.ChatID}}">
+          <a class="nav-link {{if eq .ChatID $chatID}}active{{end}}" aria-current="page" href="/chat/{{.ChatID}}">
             <span data-feather="home" class="align-text-bottom"></span>
             {{.Title}}
           </a>
@@ -43,3 +43,5 @@
       </ul>
     </div>
   </nav>
+  <script src="/assets/sidebar.js">
+  </script>

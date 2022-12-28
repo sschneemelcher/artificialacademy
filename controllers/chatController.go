@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -11,6 +12,60 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
+
+func ChatNew(c *fiber.Ctx) error {
+	// Get user from jwt
+	user := c.Locals("user").(models.User)
+	if &user == nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "User not set"})
+	}
+
+	chat := models.Chat{Title: "Untitled"}
+	initializers.DB.Create(&chat)
+	userChat := models.UserChat{UserID: user.ID, ChatID: chat.ID}
+	initializers.DB.Create(&userChat)
+
+	return c.Redirect(fmt.Sprintf("/chat/%d", chat.ID))
+}
+
+func ChatByID(c *fiber.Ctx) error {
+	// Get user from jwt
+	user := c.Locals("user").(models.User)
+
+	if &user == nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "User not set"})
+	}
+
+	var selectedChatID = c.Params("chatid")
+	var selectedChat models.UserChat
+	result := initializers.DB.First(&selectedChat, "user_id = ? AND chat_id = ?", user.ID, selectedChatID)
+	if result.Error != nil {
+
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error": fmt.Sprintf("Failed to lookup chat with ID %s", selectedChatID),
+		})
+	}
+
+	history, err := helpers.GetHistory(selectedChat)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Error looking up history"})
+	}
+
+	chats, err := helpers.GetChatList(user)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "No chats found"})
+	}
+
+	return c.Render("chat/index", fiber.Map{
+		"companyName": os.Getenv("COMPANY_NAME"),
+		"history":     history,
+		"chatID":      selectedChat.ChatID,
+		"userID":      user.ID,
+		"userName":    user.Name,
+		"chats":       chats,
+	})
+
+}
 
 func ChatIndex(c *fiber.Ctx) error {
 	// Get user from jwt
@@ -24,7 +79,7 @@ func ChatIndex(c *fiber.Ctx) error {
 	result := initializers.DB.Last(&lastChat, "user_id = ?", user.ID)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			chat := models.Chat{Title: "New Chat"}
+			chat := models.Chat{Title: "Untitled"}
 			initializers.DB.Create(&chat)
 			userChat := models.UserChat{UserID: user.ID, ChatID: chat.ID}
 			initializers.DB.Create(&userChat)
@@ -34,46 +89,21 @@ func ChatIndex(c *fiber.Ctx) error {
 		}
 	}
 
-	// get history from DB
-	type History struct {
-		Name    string
-		UserID  uint
-		Content string
-		ChatID  uint
+	history, err := helpers.GetHistory(lastChat)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Error looking up history"})
 	}
 
-	history := []History{}
-	result = initializers.DB.Model(&models.User{}).
-		Select("users.name, messages.user_id, messages.content, messages.chat_id").
-		Joins("right join messages on messages.user_id = users.id").
-		Where("messages.chat_id = ? AND messages.deleted_at IS NULL", lastChat.ChatID).
-		Order("messages.created_at ASC").
-		Find(&history)
-
-	if result.Error != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "No history found"})
-	}
-
-	type ChatList struct {
-		Title  string
-		ChatID uint
-	}
-	chats := []ChatList{}
-	result = initializers.DB.Model(&models.Chat{}).
-		Select("chats.title, user_chats.chat_id").
-		Joins("right join user_chats on user_chats.chat_id = chats.id").
-		Where("user_chats.user_id = ? AND user_chats.deleted_at IS NULL AND chats.deleted_at IS NULL", user.ID).
-		Order("chats.created_at ASC").
-		Find(&chats)
-
-	if result.Error != nil {
+	chats, err := helpers.GetChatList(user)
+	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "No chats found"})
 	}
 
 	return c.Render("chat/index", fiber.Map{
 		"companyName": os.Getenv("COMPANY_NAME"),
 		"history":     history,
-		"userId":      user.ID,
+		"chatID":      lastChat.ChatID,
+		"userID":      user.ID,
 		"userName":    user.Name,
 		"chats":       chats,
 	})
@@ -84,6 +114,7 @@ func ChatPost(c *fiber.Ctx) error {
 
 	type Body struct {
 		Content string `json:"content" xml:"content" form:"content"`
+		ChatID  uint   `json:"chat_id" xml:"chat_id" form:"chat_id"`
 	}
 
 	body := new(Body)
@@ -94,7 +125,7 @@ func ChatPost(c *fiber.Ctx) error {
 	user := c.Locals("user").(models.User)
 
 	var userChat models.UserChat
-	result := initializers.DB.Last(&userChat, "user_id = ?", user.ID)
+	result := initializers.DB.First(&userChat, "user_id = ? AND chat_id = ?", user.ID, body.ChatID)
 	if result.Error != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to lookup latest chat"})
 	}
@@ -105,8 +136,6 @@ func ChatPost(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to lookup history"})
 	}
-
-	// log.Println(m.Content)
 
 	// Save message content in DB
 
@@ -135,7 +164,7 @@ func ChatPost(c *fiber.Ctx) error {
 	prompt += "Student: " + body.Content
 
 	// Generate completion
-	completion := helpers.GetCompletionDummy(prompt)
+	completion := helpers.GetCompletion(prompt)
 
 	// Save completion as message in DB
 	completionMessage := models.Message{Content: completion, UserID: 0, ChatID: userChat.ChatID}
