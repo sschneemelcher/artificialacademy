@@ -3,17 +3,20 @@
 <div class="container pb-5">
   <div class="row">
     <div class="col-md-6 offset-md-3">
-      <div class="card mt-5" style="background-color: #b4befe">
+      <div class="card mt-5" style="background-color: inherit">
+        <!--#b4befe">-->
         <div class="card-body">
           <div id="chat-window" chatID="{{.chatID}}">
             {{$userID := .userID}}
             {{range .history}}
-            <div
-              class="fs-5 font-weight-bold mb-3 card {{if ne .UserID $userID }}bg-dark text-light{{else}}text-end bg-secondary text-light{{end}}">
-              <span class="fs-6 text-decoration-underline">{{if ne .UserID $userID}} {{if
-                .Name}}{{.Name}}{{else}}StudyBot{{end}}{{else}}me:
-                {{end}}</br></span>
-              <span>{{.Content}}</span>
+            <div class="fs-5 font-weight-bold mb-3 card text-light {{if eq .UserID $userID }}text-end{{end}}"
+              style="background-color:{{if ne .UserID $userID }}#313244{{else}}#45475a{{end}}">
+              <div class="p-1">
+                <span class="fs-6 text-decoration-underline">{{if ne .UserID $userID}} {{if
+                  .Name}}{{.Name}}{{else}}StudyBot:{{end}}{{else}}me:
+                  {{end}}</br></span>
+                <span>{{.Content}}</span>
+              </div>
             </div>
             {{end}}
           </div>

@@ -120,8 +120,3 @@ input[type="submit"] {
 .sidebar .nav-link:hover {
   color: #FFF;
 }
-
-.sidebar-heading {
-  font-size: .75rem;
-  text-decoration: none;
-}
