@@ -11,7 +11,7 @@ One of the features that I'm really proud of in Artificial Academy is the abilit
 To get started with Artificial Academy, you'll need to have Go and Node.js installed on your machine. Once you have those installed, follow these steps:
 
 1. Create an account at [openAI.com](https://openai.com) and get an api token.
-1. Change copy the `.env.example` file to `.env` and fill out the information.
+1. Copy the `.env.example` file to `.env` and fill out the information.
 1. Clone this repository to your local machine.
 1. Run `go build` to build the Go application.
 1. Run `./artificialacademy` to start the application.
